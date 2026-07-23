@@ -7,10 +7,13 @@ color_1 = (20, 20, 30)
 color_2 = (30, 30, 30)
 color_mtn = (170, 0, 255)
 c_m2 = (245, 245, 245)
-title_font = pygame.font.SysFont("arial", 60)
+green = (50, 205, 50)
+
+title_font = pygame.font.SysFont("arial", 40)
 title = title_font.render("PHANTOM CHALLENGE", True, color_mtn)
 title_rect = title.get_rect(center=(400, 50))
-button_font = pygame.font.SysFont("arial", 35)
+question_font = pygame.font.SysFont("verdana", 40)
+button_font = pygame.font.SysFont("arial", 40)
 start_text = button_font.render("START", True, c_m2)
 exit_text = button_font.render("EXIT", True, c_m2)
 easy_text = button_font.render("Easy", True, c_m2)
@@ -77,7 +80,7 @@ def draw_difficulty(mouse_pos):
     else:
         pygame.draw.rect(screen, (0,170,255), back_button, border_radius=15)
     screen.blit(back_text, back_rect)
-    text = title_font.render("Choose Difficulty... ", True, (170, 0, 255))
+    text = title_font.render("Choose Difficulty...? ", True, (170, 0, 255))
     rect = text.get_rect(center=(400, 50))
 
     screen.blit(text, rect)
@@ -98,7 +101,17 @@ def draw_game ():
     difficulty_text = button_font.render(f"Difficulty: {difficulty}", True, (55, 25, 211))
     difficulty_rect = difficulty_text.get_rect()
     screen.blit(difficulty_text, (40, 60))
+    question = "21 + 14 = ?"
+    if difficulty == "Easy":
+        question = "24 + 12 = ?"
+    elif difficulty == "Normal":
+        question = "12 * 3 = ?"
+    elif difficulty == "Hard":
+        question = "12 ** 2 = ?"
 
+    question_text = question_font.render(question, True, green)
+    question_rect = question_text.get_rect()
+    screen.blit(question_text, (140, 200))
 game_state = "menu"
 difficulty = None
 
@@ -136,6 +149,10 @@ while running:
                     game_state = "game"
                 elif back_button.collidepoint(event.pos):
                     game_state = "menu"
+
+
+
+
     pygame.display.update()
 pygame.quit()
 
