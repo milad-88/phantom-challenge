@@ -13,10 +13,10 @@ title_rect = title.get_rect(center=(400, 50))
 button_font = pygame.font.SysFont("arial", 35)
 start_text = button_font.render("START", True, c_m2)
 exit_text = button_font.render("EXIT", True, c_m2)
-easy_text = button_font.render("easy", True, c_m2)
-hard_text = button_font.render("hard", True, c_m2)
-normal_text = button_font.render("normal", True, c_m2)
-back_text = button_font.render("back", True, c_m2)
+easy_text = button_font.render("Easy", True, c_m2)
+hard_text = button_font.render("Hard", True, c_m2)
+normal_text = button_font.render("Normal", True, c_m2)
+back_text = button_font.render("Back", True, c_m2)
 footer_font = pygame.font.SysFont("consolas", 18)
 footer_text = footer_font.render("Phantom Challenge v0.1 Alpha * MILAD 2026", True, (245, 245, 245))
 footer_rect = footer_text.get_rect(center=(400, 580))
@@ -80,17 +80,11 @@ def draw_difficulty(mouse_pos):
     text = title_font.render("Choose Difficulty... ", True, (170, 0, 255))
     rect = text.get_rect(center=(400, 50))
 
-
-
-
     screen.blit(text, rect)
     screen.blit(easy_text , easy_rect)
     screen.blit(hard_text, hard_rect)
     screen.blit(normal_text, normal_rect)
     screen.blit(back_text, back_rect)
-
-
-
 
 def draw_title():
     screen.blit(title, title_rect)
@@ -101,7 +95,9 @@ def draw_game ():
     game_text = title_font.render("GAME", True, (170, 0, 255))
     game_rect = game_text.get_rect(center=(400, 50))
     screen.blit(game_text, game_rect)
-
+    difficulty_text = button_font.render(f"Difficulty: {difficulty}", True, (55, 25, 211))
+    difficulty_rect = difficulty_text.get_rect()
+    screen.blit(difficulty_text, (40, 60))
 
 game_state = "menu"
 difficulty = None
@@ -130,13 +126,13 @@ while running:
                     game_state = "difficulty"
             elif game_state == "difficulty":
                 if easy_button.collidepoint(event.pos):
-                    difficulty = "easy"
+                    difficulty = "Easy"
                     game_state = "game"
                 elif normal_button.collidepoint(event.pos):
-                    difficulty = "normal"
+                    difficulty = "Normal"
                     game_state = "game"
                 elif hard_button.collidepoint(event.pos):
-                    difficulty = "hard"
+                    difficulty = "Hard"
                     game_state = "game"
                 elif back_button.collidepoint(event.pos):
                     game_state = "menu"
