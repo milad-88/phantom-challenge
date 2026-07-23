@@ -79,10 +79,7 @@ def draw_difficulty(mouse_pos):
     screen.blit(back_text, back_rect)
     text = title_font.render("Choose Difficulty... ", True, (170, 0, 255))
     rect = text.get_rect(center=(400, 50))
-    pygame.draw.rect(screen, (0, 170, 255), easy_button, border_radius=15)
-    pygame.draw.rect(screen, (0, 170, 255), hard_button, border_radius=15)
-    pygame.draw.rect(screen, (0, 170, 255), normal_button, border_radius=15)
-    pygame.draw.rect(screen, (0, 170, 255), back_button, border_radius=15)
+
 
 
 
@@ -126,10 +123,23 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if exit_button.collidepoint(event.pos):
-                running = False
-            if start_button.collidepoint(event.pos):
-                game_state = "difficulty"
+            if game_state == "menu":
+                if exit_button.collidepoint(event.pos):
+                    running = False
+                elif start_button.collidepoint(event.pos):
+                    game_state = "difficulty"
+            elif game_state == "difficulty":
+                if easy_button.collidepoint(event.pos):
+                    difficulty = "easy"
+                    game_state = "game"
+                elif normal_button.collidepoint(event.pos):
+                    difficulty = "normal"
+                    game_state = "game"
+                elif hard_button.collidepoint(event.pos):
+                    difficulty = "hard"
+                    game_state = "game"
+                elif back_button.collidepoint(event.pos):
+                    game_state = "menu"
     pygame.display.update()
 pygame.quit()
 
