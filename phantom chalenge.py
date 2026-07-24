@@ -26,7 +26,7 @@ footer_rect = footer_text.get_rect(center=(400, 580))
 screen = pygame.display.set_mode((width, height))
 
 pygame.display.set_caption("Phantom Challenge")
-#================================================button=================================================================
+#================================================button======rect=======================================================
 start_button = pygame.Rect(200, 150, 150, 40)
 exit_button = pygame.Rect(500, 150, 150, 40)
 menu_button = pygame.Rect(650, 10, 120, 45)
@@ -65,6 +65,7 @@ def draw_buttons(mouse_pos) :
         pygame.draw.rect(screen, (220,60,60), exit_button, border_radius=15)
     screen.blit(exit_text, exit_txt_rect)
 
+
 def draw_difficulty(mouse_pos):
     if easy_button.collidepoint(mouse_pos):
         pygame.draw.rect(screen, (0,220,255), easy_button, border_radius=15)
@@ -99,32 +100,48 @@ def draw_difficulty(mouse_pos):
     screen.blit(normal_text, normal_rect)
     screen.blit(back_text, back_rect)
 
+def reset_game():
+    global user_answer, result_text
+    user_answer = ""
+    result_text = ""
+
 def draw_title():
     screen.blit(title, title_rect)
 def draw_footer():
     screen.blit(footer_text, footer_rect)
 def draw_game (mouse_pos):
+    global answer
     screen.fill(color_2)
     game_text = title_font.render("GAME", True, (170, 0, 255))
     game_rect = game_text.get_rect(center=(400, 50))
     screen.blit(game_text, game_rect)
     draw_menu_button(mouse_pos)
     difficulty_text = button_font.render(f"Difficulty: {difficulty}", True, (55, 25, 211))
-
+    result = button_font.render(result_text, True, (255, 255, 0))
+    label = button_font.render("Answer: " , True , (255, 255, 255))
+    user = button_font.render(user_answer, True, (88, 255, 140))
+    screen.blit(label, (140, 300))
+    screen.blit(user, (270, 300))
     screen.blit(difficulty_text, (15, 15))
+    screen.blit(result, (250, 380))
     question = "21 + 14 = ?"
     if difficulty == "Easy":
         question = "24 + 12 = ?"
+        answer = 36
     elif difficulty == "Normal":
         question = "12 * 3 = ?"
+        answer = 36
     elif difficulty == "Hard":
         question = "12 ** 2 = ?"
+        answer = 144
     question_text = question_font.render(question, True, green)
 
     screen.blit(question_text, (50, 120))
 game_state = "menu"
 difficulty = None
-
+user_answer = ""
+answer = 0
+result_text = ""
 running = True
 while running:
     screen.fill(color_2)
@@ -143,8 +160,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if game_state == "menu":
+                reset_game()
                 if exit_button.collidepoint(event.pos):
                     running = False
                 elif start_button.collidepoint(event.pos):
@@ -163,7 +181,21 @@ while running:
                     game_state = "menu"
             elif game_state == "game":
                 if menu_button.collidepoint(event.pos):
+                    reset_game()
                     game_state = "difficulty"
+        elif event.type == pygame.KEYDOWN and game_state == "game":
+            if event.unicode.isdigit():
+                user_answer += event.unicode
+            elif event.key == pygame.K_BACKSPACE:
+                user_answer = user_answer[:-1]
+            elif event.key == pygame.K_RETURN:
+                if user_answer != "":
+                    if int(user_answer) == answer :
+                        reset_game()
+                        result_text = "Correct"
+                    else:
+                        reset_game()
+                        result_text = "Wrong!"
 
 
     pygame.display.update()
