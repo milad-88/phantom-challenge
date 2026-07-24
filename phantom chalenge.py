@@ -17,6 +17,7 @@ button_font = pygame.font.SysFont("arial", 40)
 start_text = button_font.render("START", True, c_m2)
 exit_text = button_font.render("EXIT", True, c_m2)
 easy_text = button_font.render("Easy", True, c_m2)
+menu_text = button_font.render("Menu", True, color_mtn)
 hard_text = button_font.render("Hard", True, c_m2)
 normal_text = button_font.render("Normal", True, c_m2)
 back_text = button_font.render("Back", True, c_m2)
@@ -29,8 +30,10 @@ pygame.display.set_caption("Phantom Challenge")
 #================================================button=================================================================
 start_button = pygame.Rect(200, 150, 150, 40)
 exit_button = pygame.Rect(500, 150, 150, 40)
+menu_button = pygame.Rect(700, 10, 120, 45)
 start_txt_rect = start_text.get_rect(center=start_button.center)
 exit_txt_rect = exit_text.get_rect(center=exit_button.center)
+menu_text_rect = menu_text.get_rect(center=menu_button.center)
 easy_rect = easy_text.get_rect(center=(400, 180))
 hard_rect = hard_text.get_rect(center=(400, 260))
 normal_rect = normal_text.get_rect(center=(400, 340))
@@ -39,7 +42,14 @@ easy_button = pygame.Rect(250, 150, 300, 60)
 hard_button = pygame.Rect(250, 230, 300, 60)
 normal_button = pygame.Rect(250, 310, 300, 60)
 back_button = pygame.Rect(250, 470, 300, 60)
+
 #===========================================================DEF=========================================================
+def draw_menu_button(mouse_pos):
+    if menu_button.collidepoint(mouse_pos):
+        pygame.draw.rect(screen, (0, 220, 255), menu_button, border_radius=15)
+
+    else:pygame.draw.rect(screen, (0, 170, 255), menu_button, border_radius=15)
+    screen.blit(menu_text, menu_text_rect)
 def draw_buttons(mouse_pos) :
 
     if start_button.collidepoint(mouse_pos):
@@ -98,6 +108,7 @@ def draw_game ():
     game_text = title_font.render("GAME", True, (170, 0, 255))
     game_rect = game_text.get_rect(center=(400, 50))
     screen.blit(game_text, game_rect)
+    draw_menu_button(mouse_pos)
     difficulty_text = button_font.render(f"Difficulty: {difficulty}", True, (55, 25, 211))
     difficulty_rect = difficulty_text.get_rect()
     screen.blit(difficulty_text, (40, 60))
@@ -149,9 +160,6 @@ while running:
                     game_state = "game"
                 elif back_button.collidepoint(event.pos):
                     game_state = "menu"
-
-
-
 
     pygame.display.update()
 pygame.quit()
