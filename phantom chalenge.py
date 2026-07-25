@@ -7,6 +7,7 @@ color_2 = (30, 30, 30)
 color_mtn = (170, 0, 255)
 c_m2 = (245, 245, 245)
 green = (50, 205, 50)
+question_index = 0
 
 title_font = pygame.font.SysFont("arial", 40)
 title = title_font.render("PHANTOM CHALLENGE", True, color_mtn)
@@ -42,6 +43,11 @@ easy_button = pygame.Rect(250, 150, 300, 60)
 hard_button = pygame.Rect(250, 230, 300, 60)
 normal_button = pygame.Rect(250, 310, 300, 60)
 back_button = pygame.Rect(250, 470, 300, 60)
+
+easy_question = [("24 + 12 = ?", 36),("15 + 18 = ?",33),("40 + 16 = ?",56),("11 + 25 = ?",36)]
+
+
+
 
 #===========================================================DEF=========================================================
 def draw_menu_button(mouse_pos):
@@ -102,10 +108,11 @@ def draw_difficulty(mouse_pos):
     screen.blit(back_text, back_rect)
 
 def reset_game():
-    global user_answer, result_text
+    global user_answer, result_text, score, difficulty
     user_answer = ""
+    score = 0
     result_text = ""
-
+    difficulty = None
 def draw_title():
     screen.blit(title, title_rect)
 def draw_footer():
@@ -118,6 +125,7 @@ def draw_game (mouse_pos):
     screen.blit(game_text, game_rect)
     draw_menu_button(mouse_pos)
     difficulty_text = button_font.render(f"Difficulty: {difficulty}", True, (55, 25, 211))
+    score_text = button_font.render(f" Score: {score}", True, (255, 215, 0))
     result = button_font.render(result_text, True, (255, 255, 0))
     label = button_font.render("Answer: " , True , (255, 255, 255))
     user = button_font.render(user_answer, True, (88, 255, 140))
@@ -125,10 +133,10 @@ def draw_game (mouse_pos):
     screen.blit(user, (270, 300))
     screen.blit(difficulty_text, (15, 15))
     screen.blit(result, (250, 380))
-    question = "21 + 14 = ?"
+    screen.blit(score_text, (600, 60))
+    question = ""
     if difficulty == "Easy":
-        question = "24 + 12 = ?"
-        answer = 36
+        question, answer = easy_question[question_index]
     elif difficulty == "Normal":
         question = "12 * 3 = ?"
         answer = 36
@@ -143,6 +151,7 @@ difficulty = None
 user_answer = ""
 answer = 0
 result_text = ""
+score = 0
 running = True
 while running:
     screen.fill(color_2)
@@ -192,10 +201,17 @@ while running:
             elif event.key == pygame.K_RETURN:
                 if user_answer != "":
                     if int(user_answer) == answer :
-                        reset_game()
+                        score += 1
+                        if question_index < len(easy_question) -1:
+                            question_index += 1
+                        else:
+                            game_state = "GAME_OVER"
+                        user_answer = ""
                         result_text = "Correct"
+
                     else:
-                        reset_game()
+                        score -= 1
+                        user_answer = ""
                         result_text = "Wrong!"
 
 
