@@ -11,20 +11,19 @@ question_index = 0
 
 title_font = pygame.font.SysFont("arial", 40)
 title = title_font.render("PHANTOM CHALLENGE", True, color_mtn)
-title_rect = title.get_rect(center=(400, 50))
 icon = pygame.image.load("phantom.png")
 question_font = pygame.font.SysFont("verdana", 40)
 button_font = pygame.font.SysFont("arial", 40)
 start_text = button_font.render("START", True, c_m2)
 exit_text = button_font.render("EXIT", True, c_m2)
 easy_text = button_font.render("Easy", True, c_m2)
+restart_text = button_font.render("RESTART", True, c_m2)
 menu_text = button_font.render("Menu", True, color_mtn)
 hard_text = button_font.render("Hard", True, c_m2)
 normal_text = button_font.render("Normal", True, c_m2)
 back_text = button_font.render("Back", True, c_m2)
 footer_font = pygame.font.SysFont("consolas", 18)
 footer_text = footer_font.render("Phantom Challenge v0.2 Alpha * MILAD 2026", True, (245, 245, 245))
-footer_rect = footer_text.get_rect(center=(400, 580))
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_icon(icon)
 pygame.display.set_caption("Phantom Challenge")
@@ -32,9 +31,13 @@ pygame.display.set_caption("Phantom Challenge")
 start_button = pygame.Rect(200, 150, 150, 40)
 exit_button = pygame.Rect(500, 150, 150, 40)
 menu_button = pygame.Rect(650, 10, 120, 45)
+restart_button = pygame.Rect(250, 350, 300, 60)
+restart_rect = restart_text.get_rect(center=restart_button.center)
 start_txt_rect = start_text.get_rect(center=start_button.center)
 exit_txt_rect = exit_text.get_rect(center=exit_button.center)
 menu_text_rect = menu_text.get_rect(center=menu_button.center)
+title_rect = title.get_rect(center=(400, 50))
+footer_rect = footer_text.get_rect(center=(400, 580))
 easy_rect = easy_text.get_rect(center=(400, 180))
 hard_rect = hard_text.get_rect(center=(400, 260))
 normal_rect = normal_text.get_rect(center=(400, 340))
@@ -45,8 +48,8 @@ normal_button = pygame.Rect(250, 310, 300, 60)
 back_button = pygame.Rect(250, 470, 300, 60)
 
 easy_question = [("24 + 12 = ?", 36),("15 + 18 = ?",33),("40 + 16 = ?",56),("11 + 25 = ?",36)]
-
-
+hard_question = [("12 ** 2 = ?", 144), ("15 * 15 = ?", 225), ("140 / 5 = ?", 28)]
+normal_question = [("12 * 3 = ?", 36),("16 * 2 = ?", 8),("90 * 10 = ?", 9)]
 
 
 #===========================================================DEF=========================================================
@@ -108,17 +111,45 @@ def draw_difficulty(mouse_pos):
     screen.blit(back_text, back_rect)
 
 def reset_game():
-    global user_answer, result_text, score, difficulty
+    global user_answer, result_text, score, difficulty, lives , question_index
     user_answer = ""
     score = 0
     result_text = ""
-    difficulty = None
+    lives = 3
+    question_index = 0
 def draw_title():
     screen.blit(title, title_rect)
 def draw_footer():
     screen.blit(footer_text, footer_rect)
+def draw_game_over(mouse_pos):
+    screen.fill((20, 20, 30))
+    text = title_font.render("GAME OVER", True, (225, 0, 0))
+    rect = text.get_rect(center=(400, 150))
+    score_show = button_font.render(f"Final Score :{score}", True, (222, 222, 222))
+    screen.blit(score_show, (250, 250))
+
+    mouse_pos = pygame.mouse.get_pos()
+    draw_restart_button(mouse_pos)
+def draw_win(mouse_pos):
+    screen.fill((65, 155, 78))
+    text_win = title_font.render("YOU WIN", True, (25, 21, 86))
+    rect_win = text_win.get_rect(center=(400, 150))
+    score_show = button_font.render(f"Final Score :{score}", True, (222, 222, 222))
+    screen.blit(score_show, (250, 250))
+    screen.blit(text_win, rect_win)
+    mouse_pos = pygame.mouse.get_pos()
+    draw_restart_button(mouse_pos)
+
+def draw_restart_button(mouse_pos):
+    if restart_button.collidepoint(mouse_pos):
+        pygame.draw.rect(screen, (0,220,255), restart_button, border_radius=15)
+    else:
+        pygame.draw.rect(screen, (0,170,255), restart_button, border_radius=15)
+
+    screen.blit(restart_text, restart_rect)
+
 def draw_game (mouse_pos):
-    global answer
+    global answer, lives
     screen.fill(color_2)
     game_text = title_font.render("GAME", True, (170, 0, 255))
     game_rect = game_text.get_rect(center=(400, 50))
@@ -126,9 +157,11 @@ def draw_game (mouse_pos):
     draw_menu_button(mouse_pos)
     difficulty_text = button_font.render(f"Difficulty: {difficulty}", True, (55, 25, 211))
     score_text = button_font.render(f" Score: {score}", True, (255, 215, 0))
+    lives_text = button_font.render(f"Lives: {lives}", True, (255, 60, 60))
     result = button_font.render(result_text, True, (255, 255, 0))
     label = button_font.render("Answer: " , True , (255, 255, 255))
     user = button_font.render(user_answer, True, (88, 255, 140))
+    screen.blit(lives_text ,(100, 500))
     screen.blit(label, (140, 300))
     screen.blit(user, (270, 300))
     screen.blit(difficulty_text, (15, 15))
@@ -138,11 +171,9 @@ def draw_game (mouse_pos):
     if difficulty == "Easy":
         question, answer = easy_question[question_index]
     elif difficulty == "Normal":
-        question = "12 * 3 = ?"
-        answer = 36
+        question, answer = normal_question[question_index]
     elif difficulty == "Hard":
-        question = "12 ** 2 = ?"
-        answer = 144
+        question, answer = hard_question[question_index]
     question_text = question_font.render(question, True, green)
 
     screen.blit(question_text, (50, 120))
@@ -153,6 +184,7 @@ answer = 0
 result_text = ""
 score = 0
 running = True
+lives = 3
 while running:
     screen.fill(color_2)
     if game_state == "menu":
@@ -167,6 +199,14 @@ while running:
     elif game_state == "difficulty":
         mouse_pos = pygame.mouse.get_pos()
         draw_difficulty(mouse_pos)
+    elif game_state == "game_over":
+        mouse_pos = pygame.mouse.get_pos()
+        draw_game_over(mouse_pos)
+    elif game_state == "win":
+        mouse_pos = pygame.mouse.get_pos()
+        draw_win(mouse_pos)
+        draw_restart_button(mouse_pos)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -193,26 +233,51 @@ while running:
                 if menu_button.collidepoint(event.pos):
                     reset_game()
                     game_state = "difficulty"
+            elif game_state == "game_over":
+                if restart_button.collidepoint(event.pos):
+                    reset_game()
+                    game_state = "difficulty"
+            elif game_state == "win":
+                if restart_button.collidepoint(event.pos):
+                    reset_game()
+                    game_state = "difficulty"
         elif event.type == pygame.KEYDOWN and game_state == "game":
             if event.unicode.isdigit():
                 user_answer += event.unicode
             elif event.key == pygame.K_BACKSPACE:
                 user_answer = user_answer[:-1]
+
             elif event.key == pygame.K_RETURN:
                 if user_answer != "":
                     if int(user_answer) == answer :
                         score += 1
-                        if question_index < len(easy_question) -1:
-                            question_index += 1
-                        else:
-                            game_state = "GAME_OVER"
                         user_answer = ""
-                        result_text = "Correct"
+                        if difficulty == "Easy":
+                            if question_index < len(easy_question) - 1:
+                                question_index += 1
+                            else:
+                                game_state = "win"
+
+                        elif difficulty == "Normal":
+                            if question_index < len(normal_question) - 1:
+                                question_index += 1
+                            else:
+                                game_state = "win"
+
+                        elif difficulty == "Hard":
+                            if question_index < len(hard_question) - 1:
+                                question_index += 1
+                            else:
+                                game_state = "win"
 
                     else:
-                        score -= 1
+                        lives -= 1
                         user_answer = ""
-                        result_text = "Wrong!"
+                        result_text = "Wrong"
+                        if lives == 0:
+                            game_state = "game_over"
+
+
 
 
     pygame.display.update()
